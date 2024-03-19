@@ -5,9 +5,10 @@ import { PrismaService } from './prisma.service';
 import { UserModule } from './user/user.module';
 import { PaginationModule } from './pagination/pagination.module';
 import { GenreModule } from './genre/genre.module';
+import { ActorModule } from './actor/actor.module';
 
 @Module({
-	imports: [ConfigModule.forRoot({ isGlobal: true }), UserModule, AuthModule, PaginationModule, GenreModule],
+	imports: [ConfigModule.forRoot({ isGlobal: true }), UserModule, AuthModule, PaginationModule, GenreModule, ActorModule],
 	providers: [PrismaService]
 })
 export class AppModule {}
