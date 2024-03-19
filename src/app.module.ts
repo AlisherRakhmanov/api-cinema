@@ -7,6 +7,7 @@ import { MediaModule } from './media/media.module';
 import { PaginationModule } from './pagination/pagination.module';
 import { PrismaService } from './prisma.service';
 import { UserModule } from './user/user.module';
+import { DirectorModule } from './director/director.module';
 
 @Module({
 	imports: [
@@ -16,7 +17,8 @@ import { UserModule } from './user/user.module';
 		PaginationModule,
 		GenreModule,
 		ActorModule,
-		MediaModule
+		MediaModule,
+		DirectorModule
 	],
 	providers: [PrismaService]
 })
