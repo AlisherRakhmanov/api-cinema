@@ -1,14 +1,17 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	Param,
 	Patch,
+	Query,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { CurrentUser } from './decorators/user.decorator';
+import { UserFilterDto } from './dto/user-filter.dto';
 import { UserDot } from './dto/user.dto';
 import { UserService } from './user.service';
 
@@ -31,6 +34,12 @@ export class UserController {
 
 	//Admin place
 	@Auth('admin')
+	@Get()
+	getAll(@Query() dto: UserFilterDto) {
+		return this.userService.getAll(dto);
+	}
+
+	@Auth('admin')
 	@Get(':id')
 	getUser(@Param('id') id: string) {
 		return this.userService.getById(+id);
@@ -41,5 +50,11 @@ export class UserController {
 	@Patch(':id')
 	updateUser(@Param('id') id: string, @Body() dto: UserDot) {
 		return this.userService.update(+id, dto);
+	}
+
+	@Auth('admin')
+	@Delete(':id')
+	deleteUser(@Param('id') id: string) {
+		return this.userService.delete(+id);
 	}
 }

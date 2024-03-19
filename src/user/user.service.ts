@@ -3,15 +3,21 @@ import {
 	Injectable,
 	NotFoundException
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { hash } from 'argon2';
 import { AuthDto } from 'src/auth/dto/auth.dto';
+import { PaginationService } from 'src/pagination/pagination.service';
 import { PrismaService } from 'src/prisma.service';
+import { UserFilterDto } from './dto/user-filter.dto';
 import { UserDot } from './dto/user.dto';
 import { UserSelect } from './user.select';
 
 @Injectable()
 export class UserService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly paginationService: PaginationService
+	) {}
 
 	async getById(id: number) {
 		const user = await this.prisma.user.findUnique({
@@ -65,8 +71,31 @@ export class UserService {
 	}
 
 	//Admin place
-	async getAll() {
-		return await this.prisma.user.findMany({ select: UserSelect });
+	async getAll(dto: UserFilterDto) {
+		const UserFilterSearch: Prisma.UserWhereInput = dto.searchTerm
+			? {
+					OR: [
+						{
+							email: {
+								contains: dto.searchTerm,
+								mode: 'insensitive'
+							}
+						}
+					]
+			  }
+			: {};
+
+		const { perPage, skip } = this.paginationService.getPagination(dto);
+
+		return {
+			products: await this.prisma.user.findMany({
+				where: UserFilterSearch,
+				select: UserSelect,
+				skip,
+				take: perPage
+			}),
+			length: await this.prisma.user.count({ where: UserFilterSearch })
+		};
 	}
 
 	async getCount() {
